@@ -100,7 +100,7 @@ app.post("/forgot-password", (req, res) => {
       from: "tamil.kani56@gmail.com",
       to: "tamil.kani56@gmail.com",
       subject: "Reset your Password Link",
-      text: `http://localhost:5173/reset-password/${user._id}/${token}`,
+      text: `https://tamilbackendnew.onrender.com/reset-password/${user._id}/${token}`,
     };
 
     mailTransporter.sendMail(details, (err) => {
