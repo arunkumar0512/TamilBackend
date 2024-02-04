@@ -14,7 +14,7 @@ const app = express();
 app.use(express.json());
 app.use(
   cors({
-    origin: [" https://tamilbackendnew.onrender.com"],
+    origin: ["https://tamilbackendnew.onrender.com"],
     methods: ["GET", "POST"],
     credentials: true,
   })
@@ -27,23 +27,24 @@ app.listen(4007, () => {
 });
 
 const verifyUser = (req, res, next) => {
-  const token = req.cookie.token;
+  const token = req.cookies.token;
   if (!token) {
     return res.json("Token Is Missing");
   } else {
-    jwt.verify(token, "jwt-secret-key", (err, decoded) => {
+    jwt.verify(token, "jwt_secret_key", (err, decoded) => {
       if (err) {
         return res.json("Error With Token");
       } else {
-        if (decoded.User === "Succes") {
+        if (decoded.email === "Succes") {
           next();
-          // } else {
-          //   return res.json("Not Admin");
+        } else {
+          return res.json("Not Admin");
         }
       }
     });
   }
 };
+
 app.get("/home", verifyUser, (req, res) => {
   res.json("Suceesed");
 });
@@ -106,8 +107,10 @@ app.post("/forgot-password", (req, res) => {
     mailTransporter.sendMail(details, (err) => {
       if (err) {
         console.log("mail not send");
+        return res.json({ status: "Mail not sent" });
       } else {
         console.log("mail sent successfully");
+        return res.json({ status: "Mail sent successfully" });
       }
     });
   });
@@ -123,15 +126,14 @@ app.post("/reset-password/:id/:token/:password", (req, res) => {
         UserModel.findByIdAndUpdate({ _id: id }, { password: hash }).then(
           (u) => {
             res.send({ status: "Success" });
-            // .catch((err) => res.send({ status: err }));
           }
         );
       });
     }
   });
 });
+
 app.get("/", async (req, res) => {
-  // for testing
   try {
     console.log("server working");
     res.status(200).json({ message: "working" });
